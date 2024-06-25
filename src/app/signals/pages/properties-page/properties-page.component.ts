@@ -3,6 +3,8 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
+  OnDestroy,
   signal,
 } from '@angular/core';
 import { User } from '../../interfaces/user-request.interface';
@@ -18,7 +20,13 @@ import { User } from '../../interfaces/user-request.interface';
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PropertiesPageComponent {
+export class PropertiesPageComponent implements OnDestroy {
+  public counter = signal(10);
+
+  ngOnDestroy(): void {
+    //this.userchangedEffect.destroy();
+  }
+
   public user = signal<User>({
     id: 2,
     email: 'janet.weaver@reqres.in',
@@ -30,6 +38,15 @@ export class PropertiesPageComponent {
   public fullName = computed(
     () => `${this.user().first_name} ${this.user().last_name}`
   );
+
+  public userchangedEffect = effect(() => {
+    //console.log('userchangedEffect triggered');
+    console.log(`${this.user().first_name} - ${this.counter()}`);
+  });
+
+  increaseBy(value: number) {
+    this.counter.update((current) => current + value);
+  }
 
   onFieldUpdated(field: keyof User, value: string) {
     // this.user.set({
